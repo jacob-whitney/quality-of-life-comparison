@@ -1,5 +1,6 @@
 import CPITable from "@/app/ui/CPITable";
-import { calculateInflation, InflationRow } from "@/lib/cpi";
+import InflationChart from "@/app/ui/InflationChart";
+import { buildChartSeries, calculateInflation, InflationRow } from "@/lib/cpi";
 import { getUsCpi } from "@/lib/sources/us";
 import { getSpainCpi } from "@/lib/sources/es";
 
@@ -38,6 +39,19 @@ export default async function Home() {
           inflation, sourced live from the BLS and INE APIs.
         </p>
       </header>
+
+      {us.error || es.error ? null : (
+        <div className="flex flex-col md:flex-row gap-8 mb-12">
+          <InflationChart
+            title="Month-over-month inflation"
+            data={buildChartSeries(us.rows, es.rows, "momPercent")}
+          />
+          <InflationChart
+            title="Year-over-year inflation"
+            data={buildChartSeries(us.rows, es.rows, "yoyPercent")}
+          />
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row gap-10">
         <CPITable
