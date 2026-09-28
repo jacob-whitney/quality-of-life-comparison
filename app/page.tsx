@@ -41,7 +41,7 @@ export default async function Home() {
       </header>
 
       {us.error || es.error ? null : (
-        <div className="flex flex-col md:flex-row gap-8 mb-12">
+        <div className="flex flex-col lg:flex-row gap-8 mb-12">
           <InflationChart
             title="Month-over-month inflation"
             data={buildChartSeries(us.rows, es.rows, "momPercent")}

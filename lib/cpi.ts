@@ -72,3 +72,45 @@ export function calculateInflation(data: MonthlyDataPoint[]): InflationRow[] {
 
   return rows.reverse(); // newest first for display
 }
+
+export interface ChartPoint {
+  key: string; // "YYYY-MM", used for sorting only
+  label: string; // e.g. "Jan 2024"
+  us: number | null;
+  es: number | null;
+}
+
+/**
+ * Aligns two countries' inflation rows onto a shared, ascending timeline
+ * by calendar year-month, so a chart can plot one series per country even
+ * when the two APIs don't return exactly the same date range.
+ */
+export function buildChartSeries(
+  usRows: InflationRow[],
+  esRows: InflationRow[],
+  metric: "momPercent" | "yoyPercent"
+): ChartPoint[] {
+  const points = new Map<string, ChartPoint>();
+
+  const ensure = (row: InflationRow): ChartPoint => {
+    const key = `${row.year}-${String(row.month).padStart(2, "0")}`;
+    let point = points.get(key);
+    if (!point) {
+      point = {
+        key,
+        label: `${row.monthName.slice(0, 3)} ${row.year}`,
+        us: null,
+        es: null,
+      };
+      points.set(key, point);
+    }
+    return point;
+  };
+
+  for (const row of usRows) ensure(row).us = row[metric];
+  for (const row of esRows) ensure(row).es = row[metric];
+
+  return Array.from(points.values()).sort((a, b) =>
+    a.key < b.key ? -1 : a.key > b.key ? 1 : 0
+  );
+}
