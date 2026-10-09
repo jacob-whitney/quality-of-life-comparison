@@ -30,18 +30,23 @@ export default async function Home() {
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-12">
-      <header className="mb-10">
-        <h1 className="font-display text-3xl text-ink mb-2">
+      <header className="mb-10 text-center">
+        <h1 style={{ fontSize: "1.75rem", marginBottom: "0.25rem" }}>
+        Spain vs. USA — Quality of Life
+      </h1>
+      </header>
+      <section className="mb-10">
+        <h2 className="font-display text-2xl text-ink mb-2">
           Consumer Price Index
-        </h1>
+        </h2>
         <p className="text-ink/60 text-sm max-w-xl">
           Monthly index level alongside month-over-month and year-over-year
           inflation, sourced live from the BLS and INE APIs.
         </p>
-      </header>
+      </section>
 
       {us.error || es.error ? null : (
-        <div className="flex flex-col lg:flex-row gap-8 mb-12">
+        <div className="flex flex-col gap-8 mb-12">
           <InflationChart
             title="Month-over-month inflation"
             data={buildChartSeries(us.rows, es.rows, "momPercent")}
