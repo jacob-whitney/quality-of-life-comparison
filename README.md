@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# USA vs Spain Quality of Life Comparison
 
-## Getting Started
+Comparing a variety of data points to identify how each county compares on a scale for quality of life
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Project Architecture
+
+### API Data Processing
 ```
+lib
+├── cpi.ts
+└── (d) sources
+    ├── es.ts
+    └── us.ts
+```
+lib/sources/**es.ts** - Pulls and parses table of monthly index values from INE API
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+lib.sources/**us.ts** - Pulls and parses table of monthly index values from BLS API
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+lib/**cpi.ts** - Defines several data points and helper functions, using API data to calculate inflation and build charts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+### API Routes
 
-To learn more about Next.js, take a look at the following resources:
+If you need to expose API endpoints for outside users to consume, you can use API routes like app/api/es-cpi/route.ts. For this project, we don't need that.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### UI Components
+```
+app/ui
+├── CPITable.tsx
+└── InflationChart.tsx
+```
+app/ui/**InflationChart.tsx** - Uses ChartPoint from *lib/cpi.ts* to plot CPI data in line charts using recharts library
 
-## Deploy on Vercel
+app/ui/**CPITable.tsx** - Parses InflationRow from *lib/cpi.ts* into tabular display of index, MoM, and YoY
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Page(s) and Styles
+```
+app
+├── favicon.ico
+├── globals.css
+├── layout.tsx
+├── page.tsx
+└── (d) ui
+```
+app/**page.tsx** - 
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+app/**layout.tsx** - 
+
+app/**globals.css** - 

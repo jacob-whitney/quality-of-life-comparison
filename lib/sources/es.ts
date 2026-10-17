@@ -50,7 +50,7 @@ export async function getSpainCpi(): Promise<MonthlyDataPoint[]> {
 
   if (!preferred?.Data?.length) {
     throw new Error(
-      "Could not find a usable data series in the INE response — inspect the raw JSON shape and adjust lib/fetchers/es.ts"
+      "Could not find a usable data series in the INE response — inspect the raw JSON shape and adjust lib/sources/es.ts"
     );
   }
 
