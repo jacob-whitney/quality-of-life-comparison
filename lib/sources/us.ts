@@ -67,5 +67,6 @@ export async function getUsCpi(): Promise<MonthlyDataPoint[]> {
         monthName: d.periodName || monthName(month),
         value: Number(d.value),
       };
-    });
+    })
+    .filter((d) => Number.isFinite(d.value));
 }

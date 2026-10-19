@@ -1,12 +1,10 @@
 import CPITable from "@/app/ui/CPITable";
 import InflationChart from "@/app/ui/InflationChart";
 import { buildChartSeries, calculateInflation, InflationRow } from "@/lib/cpi";
-import { getUsCpi } from "@/lib/sources/us";
-import { getSpainCpi } from "@/lib/sources/es";
+import { getMonthlyPoints } from "@/lib/observations";
 
-// Revalidate at most every 12 hours — CPI is a monthly release, no need
-// to hit either upstream API on every single page view.
-export const revalidate = 43200;
+// No `revalidate` export: the Supabase server client reads cookies(), which
+// makes this page dynamic. The data itself is refreshed by the cron job.
 
 async function loadRows(
   fetcher: () => Promise<Parameters<typeof calculateInflation>[0]>
@@ -24,8 +22,8 @@ async function loadRows(
 
 export default async function Home() {
   const [us, es] = await Promise.all([
-    loadRows(getUsCpi),
-    loadRows(getSpainCpi),
+    loadRows(() => getMonthlyPoints("cpi", "US")),
+    loadRows(() => getMonthlyPoints("cpi", "ES")),
   ]);
 
   return (
@@ -41,7 +39,7 @@ export default async function Home() {
         </h2>
         <p className="text-ink/60 text-sm max-w-xl">
           Monthly index level alongside month-over-month and year-over-year
-          inflation, sourced live from the BLS and INE APIs.
+          inflation, sourced from the BLS and INE APIs and refreshed daily.
         </p>
       </section>
 

@@ -3,15 +3,12 @@ import { MonthlyDataPoint, monthName } from "@/lib/cpi";
 const TABLE_ID = "24077";
 const INE_URL = `https://servicios.ine.es/wstempus/js/EN/DATOS_TABLA/${TABLE_ID}`;
 
-// INE's Tempus API returns an array of "series" for the table (a table can
-// bundle several breakdowns together, e.g. by category or by base year).
-// Each series has a Data[] array of monthly observations.
 interface IneDataPoint {
   Fecha: number; // epoch ms
   FK_TipoDato: number;
   FK_Periodo: number; // 1-12 = months, 13 = annual average, in INE's scheme
   Anyo: number;
-  NombrePeriodo?: string; // not always present depending on query params
+  NombrePeriodo?: string;
   Valor: number;
   Secreto: boolean;
 }
@@ -22,10 +19,11 @@ interface IneSeries {
   Data: IneDataPoint[];
 }
 
+// Only called by the cron job now, so always fetch fresh (no Next cache).
 export async function getSpainCpi(): Promise<MonthlyDataPoint[]> {
   const res = await fetch(INE_URL, {
     headers: { Accept: "application/json" },
-    next: { revalidate: 60 * 60 * 12 },
+    cache: "no-store",
   });
 
   if (!res.ok) {
@@ -39,10 +37,6 @@ export async function getSpainCpi(): Promise<MonthlyDataPoint[]> {
     throw new Error("INE response contained no series");
   }
 
-  // Table 24077 is expected to be the national general CPI index by month.
-  // If the table actually bundles multiple breakdowns, prefer whichever
-  // series looks like the headline national/general index; otherwise fall
-  // back to the first series that has data.
   const preferred =
     series.find((s) => /general/i.test(s.Nombre ?? "")) ??
     series.find((s) => Array.isArray(s.Data) && s.Data.length > 0) ??
