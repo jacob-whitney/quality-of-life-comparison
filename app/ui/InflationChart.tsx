@@ -13,6 +13,7 @@ import {
   YAxis,
 } from "recharts";
 import { ChartPoint } from "@/lib/cpi";
+import StatsSummary from "@/app/ui/StatsSummary";
 
 const US_COLOR = "#36c6d1"; // teal
 const ES_COLOR = "#B36A3D"; // clay
@@ -111,7 +112,7 @@ export default function InflationChart({
   );
 
   return (
-    <div className="flex-1 min-w-[320px]">
+    <div className="flex-1 min-w-[320px] mt-5">
       <div className="flex items-baseline justify-between mb-2 gap-4 flex-wrap">
         <h3 className="font-display text-lg text-ink">{title}</h3>
 
@@ -200,6 +201,8 @@ export default function InflationChart({
           </LineChart>
         </ResponsiveContainer>
       </div>
+      <h4 className="mt-5 font-display text-md text-ink">Summary Data</h4>
+      <StatsSummary data={filtered} usColor={US_COLOR} esColor={ES_COLOR} />
     </div>
   );
 }
